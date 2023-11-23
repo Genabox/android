@@ -12,6 +12,9 @@ from datetime import datetime
 from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
 
+#from kivy.config import Config
+#Config.set('kivy', 'clipboard', 'sdl2')
+
 # Путь к файлу с настройками
 SETTINGS_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "settings.json")
 
