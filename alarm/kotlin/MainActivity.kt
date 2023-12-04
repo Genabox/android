@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         startAlarmButton = findViewById(R.id.startAlarmButton)
         stopAlarmButton = findViewById(R.id.stopAlarmButton)
         testAlarmButton = findViewById(R.id.testAlarmButton)
-        exitButton = findViewById(R.id.exitButton)
+
 
         loadSettings()
 
@@ -61,9 +61,7 @@ class MainActivity : AppCompatActivity() {
             testAlarm()
         }
 
-        exitButton.setOnClickListener {
-            finish() // Закрыть приложение
-        }
+
     }
 
 
