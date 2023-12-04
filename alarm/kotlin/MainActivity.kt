@@ -12,6 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import org.json.JSONObject
 import java.io.File
 import java.util.*
+import android.content.SharedPreferences
+import android.content.Context
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mp3UrlEditText: EditText
@@ -23,7 +26,6 @@ class MainActivity : AppCompatActivity() {
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var alarmTime: String
     private lateinit var testAlarmButton: Button
-    private lateinit var hideButton: Button
     private lateinit var exitButton: Button
     private val handler = Handler()
     private var alarmTimer: Timer? = null
@@ -39,7 +41,6 @@ class MainActivity : AppCompatActivity() {
         startAlarmButton = findViewById(R.id.startAlarmButton)
         stopAlarmButton = findViewById(R.id.stopAlarmButton)
         testAlarmButton = findViewById(R.id.testAlarmButton)
-        hideButton = findViewById(R.id.hideButton)
         exitButton = findViewById(R.id.exitButton)
 
         loadSettings()
@@ -60,75 +61,40 @@ class MainActivity : AppCompatActivity() {
             testAlarm()
         }
 
-        hideButton.setOnClickListener {
-            moveTaskToBack(true) // Спрятать приложение
-        }
-
         exitButton.setOnClickListener {
-
-            finish()
-            System.out.close()
+            finish() // Закрыть приложение
         }
     }
+
 
     private fun loadSettings() {
-        val assetManager: AssetManager = resources.assets
+        val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val mp3Url = sharedPref.getString("mp3_url", "")
+        val alarmTime = sharedPref.getString("alarm_time", "")
+        val alarmInterval = sharedPref.getString("alarm_interval", "")
 
-        try {
-            // Открываем и читаем файл settings.json из папки assets
-            val inputStream = assetManager.open("settings.json")
-            val size = inputStream.available()
-            val buffer = ByteArray(size)
-            inputStream.read(buffer)
-            inputStream.close()
-
-            // Преобразуем байты в строку JSON
-            val json = String(buffer, Charsets.UTF_8)
-
-            // Разбираем JSON
-            val jsonObject = JSONObject(json)
-
-            val mp3Url = jsonObject.getString("mp3_url")
-            val alarmTime = jsonObject.getString("alarm_time")
-            val alarmInterval = jsonObject.getString("alarm_interval")
-
-            // Теперь у вас есть значения mp3Url и alarmTime, которые вы можете использовать
-            // для настроек вашего приложения.
-            mp3UrlEditText.setText(mp3Url)
-            alarmTimeEditText.setText(alarmTime)
-            alarmIntervalEditText.setText(alarmInterval)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("LoadSettings", "Error loading settings: ${e.message}")
-        }
+        mp3UrlEditText.setText(mp3Url)
+        alarmTimeEditText.setText(alarmTime)
+        alarmIntervalEditText.setText(alarmInterval)
     }
+
 
     private fun saveSettings() {
         val mp3Url = mp3UrlEditText.text.toString()
         val alarmTime = alarmTimeEditText.text.toString()
-
-        val settings = JSONObject()
-        settings.put("mp3_url", mp3Url)
-        settings.put("alarm_time", alarmTime)
         val alarmInterval = alarmIntervalEditText.text.toString()
-        settings.put("alarm_interval", alarmInterval)
 
+        val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        editor.putString("mp3_url", mp3Url)
+        editor.putString("alarm_time", alarmTime)
+        editor.putString("alarm_interval", alarmInterval)
+        editor.apply()
 
-        try {
-            // Создаем или перезаписываем файл settings.json во внутреннем хранилище приложения
-            val settingsFile = File(filesDir, "settings.json")
-            settingsFile.writeText(settings.toString())
-
-            // Выводим сообщение об успешном сохранении в logcat
-            Log.d("SaveSettings", "Настройки успешно сохранены")
-            Toast.makeText(this, "Настройки сохранены", Toast.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("SaveSettings", "Error saving settings: ${e.message}")
-            Toast.makeText(this, "Ошибка при сохранении настроек", Toast.LENGTH_SHORT).show()
-        }
+        // Выводим сообщение об успешном сохранении
+        Toast.makeText(this, "Настройки сохранены", Toast.LENGTH_SHORT).show()
     }
+
 
     private fun startAlarm() {
         val alarmTimeString = alarmTimeEditText.text.toString()
