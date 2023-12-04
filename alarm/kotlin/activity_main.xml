@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginTop="16dp"
-        android:hint="Enter MP3 URL" />
+        android:hint="Enter MP3 URL"
+        android:translationY="-150dp" />
 
     <EditText
         android:id="@+id/alarmTimeEditText"
@@ -22,7 +23,8 @@
         android:layout_below="@id/mp3UrlEditText"
         android:layout_centerVertical="true"
         android:layout_marginTop="16dp"
-        android:hint="Enter Alarm Time (HH:mm)" />
+        android:hint="Enter Alarm Time (HH:mm)"
+        android:translationY="-150dp" />
 
     <EditText
         android:id="@+id/alarmIntervalEditText"
@@ -31,7 +33,8 @@
         android:layout_below="@id/alarmTimeEditText"
         android:layout_centerVertical="true"
         android:layout_marginTop="16dp"
-        android:hint="Enter interval time (HH:mm:ss)" />
+        android:hint="Enter interval time (HH:mm:ss)"
+        android:translationY="-150dp" />
 
     <Button
         android:id="@+id/saveButton"
@@ -72,16 +75,15 @@
         android:text="Test alarm" />
 
     <Button
-        android:id="@+id/exitButton"
+        android:id="@+id/hideButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/stopAlarmButton"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:enabled="true"
-        android:onClick="exitApp"
-        android:text="Hide app"
+        android:onClick="hideApp"
+        android:text="Hide app" />
 
-        />
 
 </RelativeLayout>
