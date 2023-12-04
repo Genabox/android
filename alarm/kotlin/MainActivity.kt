@@ -175,17 +175,12 @@ class MainActivity : AppCompatActivity() {
                 mediaPlayer?.prepare()
                 mediaPlayer?.start()
 
-                // Отключаем кнопку "Тестировать будильник" и "Старт", активируем кнопку "Стоп"
-                testAlarmButton.isEnabled = false
-                startAlarmButton.isEnabled = false
-                stopAlarmButton.isEnabled = true
-
                 mediaPlayer?.setOnCompletionListener {
-                    // Воспроизведение завершено, активируем кнопку "Тестировать будильник" и "Старт",
-                    // отключаем кнопку "Стоп"
-                    testAlarmButton.isEnabled = true
-                    startAlarmButton.isEnabled = true
-                    stopAlarmButton.isEnabled = false
+                    // Воспроизведение завершено, оставляем кнопки "Тестировать будильник" и "Старт" активными
+                    // и не трогаем кнопку "Стоп"
+                    //testAlarmButton.isEnabled = true
+                    //startAlarmButton.isEnabled = true
+                    //stopAlarmButton.isEnabled = false
 
                     // Получаем интервал из текстового поля и разбираем его
                     val intervalString = alarmIntervalEditText.text.toString()
