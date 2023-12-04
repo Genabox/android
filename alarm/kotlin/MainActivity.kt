@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var alarmTime: String
     private lateinit var testAlarmButton: Button
+    private lateinit var hideButton: Button
     private lateinit var exitButton: Button
     private val handler = Handler()
     private var alarmTimer: Timer? = null
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         startAlarmButton = findViewById(R.id.startAlarmButton)
         stopAlarmButton = findViewById(R.id.stopAlarmButton)
         testAlarmButton = findViewById(R.id.testAlarmButton)
+        hideButton = findViewById(R.id.hideButton)
         exitButton = findViewById(R.id.exitButton)
 
         loadSettings()
@@ -58,8 +60,14 @@ class MainActivity : AppCompatActivity() {
             testAlarm()
         }
 
+        hideButton.setOnClickListener {
+            moveTaskToBack(true) // Спрятать приложение
+        }
+
         exitButton.setOnClickListener {
-            finish() // Закрыть приложение
+
+            finish()
+            System.out.close()
         }
     }
 
