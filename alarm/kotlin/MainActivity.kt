@@ -140,9 +140,9 @@ class MainActivity : AppCompatActivity() {
 
                     mediaPlayer?.setOnCompletionListener {
                         handler.post {
-                            testAlarmButton.isEnabled = true
-                            startAlarmButton.isEnabled = true
-                            stopAlarmButton.isEnabled = false
+                            testAlarmButton.isEnabled = false
+                            startAlarmButton.isEnabled = false
+                            stopAlarmButton.isEnabled = true
                         }
 
                         val intervalString = alarmIntervalEditText.text.toString()
