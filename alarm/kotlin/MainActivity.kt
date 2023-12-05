@@ -82,7 +82,11 @@ class MainActivity : AppCompatActivity() {
 
         Toast.makeText(this, "Настройки сохранены", Toast.LENGTH_SHORT).show()
     }
+
+
     private var backgroundThread: Thread? = null
+
+
     private fun startAlarm() {
         val alarmTimeString = alarmTimeEditText.text.toString()
         val alarmTimeParts = alarmTimeString.split(":")
@@ -92,32 +96,37 @@ class MainActivity : AppCompatActivity() {
             val minutes = alarmTimeParts[1].toIntOrNull()
 
             if (hours != null && minutes != null && hours in 0..23 && minutes in 0..59) {
-                val currentTime = Calendar.getInstance().apply {
-                    set(Calendar.SECOND, 0)
-                }
+                val currentTime = Calendar.getInstance()
 
                 val alarmTime = Calendar.getInstance()
                 alarmTime.set(Calendar.HOUR_OF_DAY, hours)
                 alarmTime.set(Calendar.MINUTE, minutes)
                 alarmTime.set(Calendar.SECOND, 0)
 
+                // Если указанное время уже прошло, добавляем 1 день
+                if (alarmTime.before(currentTime)) {
+                    alarmTime.add(Calendar.DAY_OF_YEAR, 1)
+                }
+
                 val delayMillis = alarmTime.timeInMillis - currentTime.timeInMillis
 
-                if (delayMillis > 0) {
-                    alarmTimer = Timer()
-                    alarmTimer?.schedule(delayMillis) {
-                        handler.post {
-                            playAlarm()
-                        }
+                alarmTimer = Timer()
+                alarmTimer?.schedule(delayMillis) {
+                    handler.post {
+                        playAlarm()
                     }
-
-                    startAlarmButton.isEnabled = false
-                    testAlarmButton.isEnabled = false
-                    stopAlarmButton.isEnabled = true
                 }
+
+                startAlarmButton.isEnabled = false
+                testAlarmButton.isEnabled = false
+                stopAlarmButton.isEnabled = true
+            } else {
+                // Если время введено некорректно, можно добавить обработку ошибки или уведомление.
+                // Например, Toast.makeText(this, "Введите корректное время", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
 
     private fun playAlarm() {
         val mp3Url = mp3UrlEditText.text.toString()
