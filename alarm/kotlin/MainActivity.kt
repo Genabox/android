@@ -195,26 +195,56 @@ class MainActivity : AppCompatActivity() {
         val mp3Url = mp3UrlEditText.text.toString()
 
         if (mp3Url.isNotEmpty()) {
-            try {
-                mediaPlayer = MediaPlayer()
-                mediaPlayer?.setDataSource(mp3Url)
-                mediaPlayer?.prepare()
-                mediaPlayer?.start()
+            backgroundThread = Thread {
+                try {
+                    mediaPlayer = MediaPlayer()
+                    mediaPlayer?.setDataSource(mp3Url)
+                    mediaPlayer?.prepare()
+                    mediaPlayer?.start()
 
-                testAlarmButton.isEnabled = false
-                stopAlarmButton.isEnabled = true
+                    // Включаем кнопку "Стоп"
+                    stopAlarmButton.isEnabled = true
 
-                mediaPlayer?.setOnCompletionListener {
-                    testAlarmButton.isEnabled = true
-                    stopAlarmButton.isEnabled = false
-                    startAlarmButton.isEnabled = false
+                    mediaPlayer?.setOnCompletionListener {
+                        handler.post {
+                            // Воспроизведение завершено, включаем кнопку "Тестировать будильник" и
+                            // отключаем кнопку "Стоп"
+                            testAlarmButton.isEnabled = true
+                            stopAlarmButton.isEnabled = false
+                            startAlarmButton.isEnabled = false
+                        }
+
+                        val intervalString = alarmIntervalEditText.text.toString()
+                        val intervalParts = intervalString.split(":")
+                        if (intervalParts.size == 3) {
+                            val intervalHours = intervalParts[0].toLongOrNull()
+                            val intervalMinutes = intervalParts[1].toLongOrNull()
+                            val intervalSeconds = intervalParts[2].toLongOrNull()
+
+                            if (intervalHours != null && intervalMinutes != null && intervalSeconds != null) {
+                                val intervalMillis =
+                                    intervalHours * 3600000 + intervalMinutes * 60000 + intervalSeconds * 1000
+
+                                handler.postDelayed({
+                                    playAlarm()
+                                }, intervalMillis)
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    handler.post {
+                        Toast.makeText(this, "Ошибка при тестировании будильника", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(this, "Ошибка при тестировании будильника", Toast.LENGTH_SHORT).show()
             }
+            backgroundThread?.start()
+
+            // Отключаем кнопку "Тестировать будильник" на время воспроизведения
+            testAlarmButton.isEnabled = false
         } else {
             Toast.makeText(this, "Введите URL для тестирования", Toast.LENGTH_SHORT).show()
         }
     }
+
 }
