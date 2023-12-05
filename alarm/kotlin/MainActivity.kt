@@ -193,7 +193,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun testAlarm() {
         val mp3Url = mp3UrlEditText.text.toString()
-
+        testAlarmButton.isEnabled = false
+        stopAlarmButton.isEnabled = true
+        startAlarmButton.isEnabled = false
         if (mp3Url.isNotEmpty()) {
             backgroundThread = Thread {
                 try {
