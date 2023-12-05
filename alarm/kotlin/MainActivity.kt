@@ -11,6 +11,114 @@ import androidx.appcompat.app.AppCompatActivity
 import java.util.*
 import kotlin.concurrent.schedule
 
+import android.app.Service
+import android.content.Intent
+
+import android.os.IBinder
+
+
+
+
+
+
+
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+
+import android.os.Binder
+
+import android.os.PowerManager
+import androidx.core.app.NotificationCompat
+
+
+class MyAlarmService : Service() {
+    private lateinit var mediaPlayer: MediaPlayer
+    private val binder = LocalBinder()
+    private lateinit var wakeLock: PowerManager.WakeLock
+
+    inner class LocalBinder : Binder() {
+        fun getService(): MyAlarmService = this@MyAlarmService
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        mediaPlayer = MediaPlayer()
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP, "AlarmService::MyWakelockTag")
+
+        wakeLock.acquire()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val notification = createNotification()
+        startForeground(1, notification)
+
+        // Ваш код обработки срабатывания будильника и воспроизведения музыки
+
+        return START_NOT_STICKY
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.stop()
+        mediaPlayer.release()
+        wakeLock.release()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return binder
+    }
+
+    private fun createNotification(): Notification {
+        val channelId = "AlarmServiceChannel"
+        val channelName = "Alarm Service Channel"
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setContentTitle("Alarm Service")
+            .setContentText("Alarm Service is running in the background")
+            .setSmallIcon(R.drawable.ic_launcher_foreground) // Замените на свою иконку
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        return notificationBuilder.build()
+    }
+}
+
+
+
+
+
+
+
+class AlarmService : Service() {
+    private lateinit var mediaPlayer: MediaPlayer
+
+    override fun onCreate() {
+        super.onCreate()
+        mediaPlayer = MediaPlayer()
+        // Инициализация MediaPlayer и воспроизведение музыки
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Обработка срабатывания будильника, включение черного экрана и воспроизведение музыки
+        return START_NOT_STICKY
+    }
+
+    override fun onDestroy() {
+        // Остановка MediaPlayer и освобождение ресурсов
+        super.onDestroy()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
+}
 class MainActivity : AppCompatActivity() {
     private lateinit var mp3UrlEditText: EditText
     private lateinit var alarmTimeEditText: EditText
