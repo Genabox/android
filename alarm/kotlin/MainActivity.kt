@@ -15,6 +15,17 @@ import android.app.Service
 import android.content.Intent
 
 import android.os.IBinder
+import android.app.job.JobInfo
+
+
+
+import android.app.job.JobParameters
+import android.app.job.JobScheduler
+import android.app.job.JobService
+import android.content.ComponentName
+
+
+
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -25,6 +36,32 @@ import android.os.Binder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 
+class MyJobService : JobService() {
+
+    override fun onStartJob(params: JobParameters?): Boolean {
+        // Логика воспроизведения мелодии будильника
+        Toast.makeText(this, "Задача JobScheduler выполнилась", Toast.LENGTH_SHORT).show()
+
+        // Если задача выполнилась успешно, верните false, иначе верните true, чтобы перезапустить задачу
+        return false
+    }
+
+    override fun onStopJob(params: JobParameters?): Boolean {
+        // Возвращает true, если задача должна быть перезапущена при остановке
+        return true
+    }
+}
+
+fun scheduleJob(context: Context, intervalMillis: Long) {
+    val componentName = ComponentName(context, MyJobService::class.java)
+    val jobInfo = JobInfo.Builder(1, componentName)
+        .setPeriodic(intervalMillis) // Задайте интервал выполнения в миллисекундах из ваших настроек
+        .setPersisted(true)
+        .build()
+
+    val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+    jobScheduler.schedule(jobInfo)
+}
 
 class MyAlarmService : Service() {
     private lateinit var mediaPlayer: MediaPlayer
@@ -47,6 +84,8 @@ class MyAlarmService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val notification = createNotification()
         startForeground(1, notification)
+
+        // Ваш код обработки срабатывания будильника и воспроизведения музыки
 
         return START_NOT_STICKY
     }
@@ -75,13 +114,12 @@ class MyAlarmService : Service() {
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setContentTitle("Alarm Service")
             .setContentText("Alarm Service is running in the background")
-            .setSmallIcon(R.drawable.ic_launcher_foreground) 
+            .setSmallIcon(R.drawable.ic_launcher_foreground) // Замените на свою иконку
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
         return notificationBuilder.build()
     }
 }
-
 
 class AlarmService : Service() {
     private lateinit var mediaPlayer: MediaPlayer
@@ -178,9 +216,7 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "Настройки сохранены", Toast.LENGTH_SHORT).show()
     }
 
-
     private var backgroundThread: Thread? = null
-
 
     private fun startAlarm() {
         val alarmTimeString = alarmTimeEditText.text.toString()
@@ -247,8 +283,7 @@ class MainActivity : AppCompatActivity() {
                             val intervalSeconds = intervalParts[2].toLongOrNull()
 
                             if (intervalHours != null && intervalMinutes != null && intervalSeconds != null) {
-                                val intervalMillis =
-                                    intervalHours * 3600000 + intervalMinutes * 60000 + intervalSeconds * 1000
+                                val intervalMillis = intervalHours * 3600000 + intervalMinutes * 60000 + intervalSeconds * 1000
 
                                 handler.postDelayed({
                                     playAlarm()
@@ -271,7 +306,6 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Введите URL для запуска будильника", Toast.LENGTH_SHORT).show()
         }
     }
-
 
     private fun stopAlarm() {
         if (backgroundThread != null && backgroundThread?.isAlive == true) {
