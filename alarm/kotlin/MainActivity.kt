@@ -16,12 +16,6 @@ import android.content.Intent
 
 import android.os.IBinder
 
-
-
-
-
-
-
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -54,8 +48,6 @@ class MyAlarmService : Service() {
         val notification = createNotification()
         startForeground(1, notification)
 
-        // Ваш код обработки срабатывания будильника и воспроизведения музыки
-
         return START_NOT_STICKY
     }
 
@@ -83,17 +75,12 @@ class MyAlarmService : Service() {
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setContentTitle("Alarm Service")
             .setContentText("Alarm Service is running in the background")
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Замените на свою иконку
+            .setSmallIcon(R.drawable.ic_launcher_foreground) 
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
         return notificationBuilder.build()
     }
 }
-
-
-
-
-
 
 
 class AlarmService : Service() {
@@ -235,7 +222,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun playAlarm() {
         val mp3Url = mp3UrlEditText.text.toString()
 
@@ -287,7 +273,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     private fun stopAlarm() {
         if (backgroundThread != null && backgroundThread?.isAlive == true) {
             backgroundThread?.interrupt()
@@ -306,7 +291,6 @@ class MainActivity : AppCompatActivity() {
         startAlarmButton.isEnabled = true
         stopAlarmButton.isEnabled = false
     }
-
 
     private fun testAlarm() {
         val mp3Url = mp3UrlEditText.text.toString()
