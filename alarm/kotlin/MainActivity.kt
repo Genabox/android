@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity() {
         if (mp3Url.isNotEmpty()) {
             val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
             val wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::MyWakeLockTag").apply {
-                acquire()
+                acquire(10*60*1000L /*10 minutes*/) // Захватываем WakeLock на 10 минут
             }
 
             backgroundThread = Thread {
@@ -155,10 +155,26 @@ class MainActivity : AppCompatActivity() {
 
                     mediaPlayer?.setOnCompletionListener {
                         handler.post {
-                            // Ваш код после завершения воспроизведения
-                        }
+                            testAlarmButton.isEnabled = true
+                            startAlarmButton.isEnabled = true
+                            stopAlarmButton.isEnabled = false
 
-                        // Ваш код для повторения воспроизведения
+                            val intervalString = alarmIntervalEditText.text.toString()
+                            val intervalParts = intervalString.split(":")
+                            if (intervalParts.size == 3) {
+                                val intervalHours = intervalParts[0].toLongOrNull()
+                                val intervalMinutes = intervalParts[1].toLongOrNull()
+                                val intervalSeconds = intervalParts[2].toLongOrNull()
+
+                                if (intervalHours != null && intervalMinutes != null && intervalSeconds != null) {
+                                    val intervalMillis = intervalHours * 3600000 + intervalMinutes * 60000 + intervalSeconds * 1000
+
+                                    handler.postDelayed({
+                                        playAlarm()
+                                    }, intervalMillis)
+                                }
+                            }
+                        }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -166,7 +182,7 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this, "Ошибка при проигрывании будильника", Toast.LENGTH_SHORT).show()
                     }
                 } finally {
-                    wakeLock.release()
+                    wakeLock.release() // Освобождаем WakeLock
                 }
             }
             backgroundThread?.start()
@@ -176,7 +192,9 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+
     private fun stopAlarm() {
+        stopService(Intent(this, AlarmService::class.java))
         if (backgroundThread != null && backgroundThread?.isAlive == true) {
             backgroundThread?.interrupt()
         }
