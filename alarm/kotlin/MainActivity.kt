@@ -14,6 +14,15 @@ import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import android.app.Service
+import android.os.Build
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Notification
+import android.os.IBinder
+
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -64,7 +73,60 @@ class MainActivity : AppCompatActivity() {
             testAlarm()
         }
     }
+    class AlarmService : Service() {
+        private var mediaPlayer: MediaPlayer? = null
 
+        override fun onCreate() {
+            super.onCreate()
+            // Создание канала уведомлений для Android O и выше
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    "alarm_service_channel",
+                    "Alarm Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
+                val manager = getSystemService(NotificationManager::class.java)
+                manager.createNotificationChannel(channel)
+            }
+        }
+
+        override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+            val mp3Url = intent?.getStringExtra("mp3_url")
+
+            // Создание уведомления для Foreground Service
+            val notification = Notification.Builder(this, "alarm_service_channel")
+                .setContentTitle("Alarm Service")
+                .setContentText("Alarm is playing...")
+                .setSmallIcon(R.drawable.ic_alarm) // Замените на реальный идентификатор ресурса вашей иконки
+                .build()
+
+            startForeground(1, notification)
+
+            try {
+                mediaPlayer = MediaPlayer().apply {
+                    setDataSource(mp3Url)
+                    prepare()
+                    start()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                stopSelf()
+            }
+
+            return START_NOT_STICKY
+        }
+
+        override fun onDestroy() {
+            super.onDestroy()
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
+            mediaPlayer = null
+        }
+
+        override fun onBind(intent: Intent?): IBinder? {
+            return null
+        }
+    }
     private fun loadSettings() {
         val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val mp3Url = sharedPref.getString("mp3_url", "https://file-examples.com/storage/febf69dcf3656dfd992b0fa/2017/11/file_example_MP3_700KB.mp3")
