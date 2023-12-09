@@ -157,7 +157,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadSettings() {
         val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        val mp3Url = sharedPref.getString("mp3_url", "https://samples-files.com/samples/Audio/mp3/sample-file-1.mp3")
+        val mp3Url = sharedPref.getString("mp3_url", "http://localhost/test.mp3")
         val alarmTime = sharedPref.getString("alarm_time", "21:41")
         val alarmInterval = sharedPref.getString("alarm_interval", "00:00:15")
 
