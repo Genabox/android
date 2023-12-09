@@ -1,12 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.callboy2"> <!-- Замените на ваш пакет -->
+    package="com.example.callboy5"> <!-- Замените на ваш пакет -->
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -17,12 +15,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Callboy2"
+        android:theme="@style/Theme.Callboy"
         tools:targetApi="31">
 
         <!-- Добавьте вашу службу (Service) здесь -->
-
-        <service android:name=".AlarmService" android:enabled="true" android:exported="false"/>
+        <service android:name=".MyAlarmService" />
 
         <activity
             android:name=".MainActivity"
