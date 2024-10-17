@@ -5,8 +5,6 @@
 //  \______  (____  /____/____/___  /\____// ____|
 //         \/     \/              \/       \/     
 
-                                                    // if you want, say thanks ~ btc: 14CZG7Tp9vyHLxJoCi1FYKzgyjeG3BuPMe
-
                                                                                          //MADE BY GENABOX 09/12/2023 --
 
 package com.example.callboy
